@@ -1,0 +1,382 @@
+# clase cobro ###########################################################################
+package cl.duoc.poo.clases;
+
+import cl.duoc.poo.interfaz.ICalculable;
+
+/**
+ *
+ * @author Fabián Saldaño
+ */
+public class Cobro implements ICalculable{
+
+    private String codigo;
+    private double totalCobro;
+    private double precio;
+    private int cantidad;
+    private Contenedor contenedor;
+
+    public Cobro(String codigo, double totalCobro, double precio, int cantidad, Contenedor contenedor) {
+        this.codigo = codigo;
+        this.totalCobro = totalCobro;
+        this.precio = precio;
+        this.cantidad = cantidad;
+        this.contenedor = contenedor;
+    }
+
+    public Cobro() {
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public double getTotalCobro() {
+        return totalCobro;
+    }
+
+    public void setTotalCobro(double totalCobro) {
+        this.totalCobro = totalCobro;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public Contenedor getContenedor() {
+        return contenedor;
+    }
+
+    public void setContenedor(Contenedor contenedor) {
+        this.contenedor = contenedor;
+    }
+
+    @Override
+    public String toString() {
+        return "Cobro{" + "codigo=" + codigo + ", totalCobro=" + totalCobro + ", precio=" + precio + ", cantidad=" + cantidad + ", contenedor=" + contenedor + '}';
+    }
+        
+    @Override
+    public double calcularRecargo(Object cont) {
+        double subtotal = 0;
+        double recargo = 0;
+        
+        if ((cont != null) && (cont instanceof Mercaderia)){
+            Mercaderia temporal = (Mercaderia) cont;
+            subtotal = getPrecio() * getCantidad();
+            recargo = subtotal * ICalculable.RECARGO_MERCADERIA;
+        }
+        
+        if ((cont != null) && (cont instanceof Refrigerado)){
+            Refrigerado temporal = (Refrigerado) cont;
+            subtotal = getPrecio() * getCantidad();
+            recargo = subtotal * ICalculable.RECARGO_REFRIGERADO;
+        }
+        
+        return recargo;
+    }
+
+    @Override
+    public void calcularTotalCobro() {
+        int total = 0;
+        
+        total = (int)(getPrecio() + calcularRecargo(contenedor));
+        
+        this.setTotalCobro(total);
+    }
+    
+}
+##############################################################################################################################
+clase abstracta
+package cl.duoc.poo.clases;
+
+/**
+ *
+ * @author Fabián Saldaño
+ */
+public abstract class Contenedor {
+    
+    private String serie;
+    private double peso;
+    private String pais;
+    private boolean bloqueado;
+    private String codigoDimensiones;
+    private String rutCli;
+
+    public Contenedor(String serie, double peso, String pais, boolean bloqueado, String codigoDimensiones, String rutCli) {
+        this.serie = serie;
+        this.peso = peso;
+        this.pais = pais;
+        this.bloqueado = bloqueado;
+        this.codigoDimensiones = codigoDimensiones;
+        this.rutCli = rutCli;
+    }
+
+    public Contenedor() {
+    }
+
+    public String getSerie() {
+        return serie;
+    }
+
+    public void setSerie(String serie) {
+        this.serie = serie;
+    }
+
+    public double getPeso() {
+        return peso;
+    }
+
+    public void setPeso(double peso) {
+        this.peso = peso;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public boolean isBloqueado() {
+        return bloqueado;
+    }
+
+    public void setBloqueado(boolean bloqueado) {
+        this.bloqueado = bloqueado;
+    }
+
+    public String getCodigoDimensiones() {
+        return codigoDimensiones;
+    }
+
+    public void setCodigoDimensiones(String codigoDimensiones) {
+        this.codigoDimensiones = codigoDimensiones;
+    }
+
+    public String getRutCli() {
+        return rutCli;
+    }
+
+    public void setRutCli(String rutCli) {
+        this.rutCli = rutCli;
+    }
+
+    @Override
+    public String toString() {
+        return "Contenedor{" + "serie=" + serie + ", peso=" + peso + ", pais=" + pais + ", bloqueado=" + bloqueado + ", codigoDimensiones=" + codigoDimensiones + ", rutCli=" + rutCli + '}';
+    }
+    
+    public abstract String contenedorBloqueado();
+}
+################################################################################################################################################################################################################
+subclase mercaderia
+package cl.duoc.poo.clases;
+
+/**
+ *
+ * @author Fabián Saldaño
+ */
+public class Mercaderia extends Contenedor{
+
+    private boolean resistencia;
+    private char tipoContenido;
+
+    public Mercaderia(boolean resistencia, char tipoContenido, String serie, double peso, String pais, boolean bloqueado, String codigoDimensiones, String rutCli) {
+        super(serie, peso, pais, bloqueado, codigoDimensiones, rutCli);
+        this.resistencia = resistencia;
+        this.tipoContenido = tipoContenido;
+    }
+
+    public Mercaderia() {
+    }
+
+    public boolean isResistencia() {
+        return resistencia;
+    }
+
+    public void setResistencia(boolean resistencia) {
+        this.resistencia = resistencia;
+    }
+
+    public char getTipoContenido() {
+        return tipoContenido;
+    }
+
+    public void setTipoContenido(char tipoContenido) {
+        this.tipoContenido = tipoContenido;
+    }
+
+    @Override
+    public String toString() {
+        return "Mercaderia{" + "resistencia=" + resistencia + ", tipoContenido=" + tipoContenido + '}';
+    }
+    
+    @Override
+    public String contenedorBloqueado() {
+        if(isBloqueado() == true){
+            return ("Se encuentra Bloqueado" + "Tipo Contenido" + this.tipoContenido);
+        }else{
+            return ("No Se encuentra Bloqueado" + "Tipo Contenido" + this.tipoContenido);
+        }        
+    }    
+}
+################################################################################################################################################################################################
+subclase refrigerado
+package cl.duoc.poo.clases;
+
+/**
+ *
+ * @author Fabián Saldaño
+ */
+public class Refrigerado extends Contenedor{
+
+    private double temperaturaActual;
+    private double temperaturaMaxima;
+    private double temperaturaMinima;
+
+    public Refrigerado(double temperaturaActual, double temperaturaMaxima, double temperaturaMinima, String serie, double peso, String pais, boolean bloqueado, String codigoDimensiones, String rutCli) {
+        super(serie, peso, pais, bloqueado, codigoDimensiones, rutCli);
+        this.temperaturaActual = temperaturaActual;
+        this.temperaturaMaxima = temperaturaMaxima;
+        this.temperaturaMinima = temperaturaMinima;
+    }
+
+    public Refrigerado() {
+    }
+
+    public double getTemperaturaActual() {
+        return temperaturaActual;
+    }
+
+    public void setTemperaturaActual(double temperaturaActual) {
+        this.temperaturaActual = temperaturaActual;
+    }
+
+    public double getTemperaturaMaxima() {
+        return temperaturaMaxima;
+    }
+
+    public void setTemperaturaMaxima(double temperaturaMaxima) {
+        this.temperaturaMaxima = temperaturaMaxima;
+    }
+
+    public double getTemperaturaMinima() {
+        return temperaturaMinima;
+    }
+
+    public void setTemperaturaMinima(double temperaturaMinima) {
+        this.temperaturaMinima = temperaturaMinima;
+    }
+
+    @Override
+    public String toString() {
+        return "Refrigerado{" + "temperaturaActual=" + temperaturaActual + ", temperaturaMaxima=" + temperaturaMaxima + ", temperaturaMinima=" + temperaturaMinima + '}';
+    }
+    
+    @Override
+    public String contenedorBloqueado() {
+       if(isBloqueado() == true){
+           return ("Se encuentra Bloqueado" + "Temperatura Actual" + this.temperaturaActual);
+       }else{
+           return ("No Se encuentra Bloqueado" + "Temperatura Actual" + this.temperaturaActual);
+       }
+    }    
+}
+#############################################################################################################################################################
+clase array registrocobro (controlador)
+package cl.duoc.poo.controlador;
+
+import cl.duoc.poo.clases.Cobro;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Fabián Saldaño
+ */
+public class RegistroCobros {
+    
+    ArrayList<Cobro> listacobros;
+
+    public RegistroCobros() {
+        
+        listacobros = new ArrayList<>();
+        
+    }
+    
+    
+    //Método Buscar Cobro por su código
+    public boolean buscarCobro(String codigo){
+        boolean valida = false;
+        
+        for(Cobro temp: listacobros){
+            if(temp.getCodigo().equals(codigo)){
+                valida = true;
+                break;
+            }
+        }
+        return valida;
+    }
+    
+    
+    //Método agregar Cobro
+    public void agregarCobro(Cobro cobro){
+        if(cobro != null){
+            if(buscarCobro(cobro.getCodigo()) == false){
+                listacobros.add(cobro);
+            }else{
+                System.out.println("El Cobro ya existe en el listado");
+            }
+        }else {
+            System.out.println("Cobro Vacio Ingrese los datos de Cobro por favor-.");
+        }
+    }
+    
+    //Método para Mostrar Total
+    public void mostrarTotalCobros(){
+        double total = 0;
+        
+        for(Cobro temp : listacobros){
+            System.out.println("Cobro: " + temp.toString());
+            total+= temp.getTotalCobro();
+        }
+        
+        System.out.println("Cantidad de Cobros: " + listacobros.size());
+        System.out.println("Total Cobros del Cliente: " + total);
+    }
+    
+}
+#################################################################################################################################################################
+clase interfase
+package cl.duoc.poo.interfaz;
+
+/**
+ *
+ * @author Fabián Saldaño
+ */
+public interface ICalculable {
+    
+    public final double RECARGO_REFRIGERADO = 0.15;
+    
+    public final double RECARGO_MERCADERIA = 0.05;
+    
+    public double calcularRecargo(Object cont);
+    
+    public void calcularTotalCobro();
+    
